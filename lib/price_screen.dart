@@ -48,10 +48,24 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
+  String bitcoinValueInUSD= '?';
+
+  void getData() async{
+    try{
+      double data=await CoinData().getCoinData();
+      setState(() {
+        bitcoinValueInUSD=data.toStringAsFixed(0);
+      });
+    }catch(e){
+      print(e);
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
+    getData();
   }
 
   @override
