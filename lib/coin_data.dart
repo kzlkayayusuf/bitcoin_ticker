@@ -31,25 +31,27 @@ const List<String> cryptoList = [
   'LTC',
 ];
 
-//const coinAPIURL = 'https://rest.coinapi.io/v1/exchangerate';
-const bitcoinAverageURL='https://apiv2.bitcoinaverage.com/indices/global/ticker';
+const coinAPIURL = 'https://rest.coinapi.io/v1/exchangerate';
 const apiKey = 'YOUR-API-KEY-HERE';
 
 class CoinData {
   Future getCoinData(String? selectedCurrency) async{
-    //String requestURL= '$coinAPIURL/BTC/USD?apiKey=$apiKey';
-    String requestURL= '$bitcoinAverageURL/BTC$selectedCurrency';
-    http.Response response = await http.get(Uri.parse(requestURL));
+    Map<String, String> cryptoPrices = {};
 
-    if(response.statusCode == 200){
-      var decodedData= jsonDecode(response.body);
-      //var lastPrice= decodedData['rate'];
-      double lastPrice = decodedData['last'];
-      return lastPrice.toStringAsFixed(0);
-    }else{
-      print(response.statusCode);
-      throw 'Problem with the get request';
+    for (String crypto in cryptoList) {
+      String requestURL =
+          '$coinAPIURL/$crypto/$selectedCurrency?apikey=$apiKey';
+      http.Response response = await http.get(Uri.parse(requestURL));
+      if (response.statusCode == 200) {
+        var decodedData = jsonDecode(response.body);
+        double price = decodedData['rate'];
+        cryptoPrices[crypto] = price.toStringAsFixed(0);
+      } else {
+        print(response.statusCode);
+        throw 'Problem with the get request';
+      }
     }
+    return cryptoPrices;
   }
 
 }
